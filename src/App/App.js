@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import Contacts from '../Contact/Contact';
 import AddContact from '../AddContact/AddContact';
 
 const App = () => {
-  const [page, setPage] = useState('contacts');
   const [contacts, setContacts] = useState([]);
 
   const addContact = (contact) => {
     setContacts([...contacts, contact]);
-    setPage('contact');
   };
 
   const deleteContact = (index) => {
@@ -17,16 +16,18 @@ const App = () => {
   };
 
   return (
-    <div>
+    <Router>
       <div>
-        <button onClick={() => setPage('contact')}>Список контактів</button>
-        <button onClick={() => setPage('addContact')}>Додати контакт</button>
+        <div>
+          <Link to="/">Список контактов</Link>
+          <Link to="/newcontact">Добавить контакт</Link>
+        </div>
+        <Routes>
+          <Route path="/" element={<Contacts contacts={contacts} deleteContact={deleteContact} />} />
+          <Route path="/newcontact" element={<AddContact addContact={addContact} />} />
+        </Routes>
       </div>
-      {page === 'contact' && (
-        <Contacts contacts={contacts} deleteContact={deleteContact} />
-      )}
-      {page === 'addContact' && <AddContact addContact={addContact} />}
-    </div>
+    </Router>
   );
 };
 
