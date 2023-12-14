@@ -1,31 +1,18 @@
-import React, { useState } from 'react';
-import Modal from '../Modal/Modal';
-import '../Modal/Modal.css';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteContact } from '../store/action';
 
-const Contact = ({ contacts, deleteContact }) => {
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const Contact = ({ onPageChange }) => {
+  const contacts = useSelector((state) => state.contacts);
+  const dispatch = useDispatch();
 
-  const openDeleteModal = (index) => {
-    setSelectedContact(index);
-    setIsModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setSelectedContact(null);
-    setIsModalOpen(false);
-  };
-
-  const handleDelete = () => {
-    if (selectedContact !== null) {
-      deleteContact(selectedContact);
-      closeDeleteModal();
-    }
+  const handleDelete = (id) => {
+    dispatch(deleteContact(id));
   };
 
   return (
     <div>
-      <h2>Список контактів</h2>
+      <h2>Contacts</h2>
       <table>
         <thead>
           <tr>
@@ -36,24 +23,19 @@ const Contact = ({ contacts, deleteContact }) => {
           </tr>
         </thead>
         <tbody>
-          {contacts.map((contact, index) => (
-            <tr key={index}>
-              <td>{contact.firstName}</td>
-              <td>{contact.lastName}</td>
+          {contacts.map((contact) => (
+            <tr key={contact.id}>
+              <td>{contact.name}</td>
+              <td>{contact.username}</td>
               <td>{contact.phone}</td>
               <td>
-                <button onClick={() => openDeleteModal(index)}>Видалити</button>
+                <button onClick={() => handleDelete(contact.id)}>Видалити</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {isModalOpen && (
-        <Modal onDelete={handleDelete} onClose={closeDeleteModal}>
-          <p>Вы действительно хотите удалить контакт?</p>
-        </Modal>
-      )}
+      <button onClick={() => onPageChange('add-contact')}>Додати контакт</button>
     </div>
   );
 };

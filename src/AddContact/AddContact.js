@@ -1,70 +1,59 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../store/action';
 
-const AddContact = ({ addContact, setPage }) => {
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      phone: '',
-    },
-    validationSchema: Yup.object({
-      firstName: Yup.string().required('Введіть ім\'я'),
-      lastName: Yup.string().required('Введіть прізвище'),
-      phone: Yup.string().required('Введіть номер телефону'),
-    }),
-    onSubmit: (values) => {
-      const newContact = { firstName: values.firstName, lastName: values.lastName, phone: values.phone };
-      addContact(newContact);
-      formik.resetForm();
-      setPage('contacts');
-    },
+const AddContact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    username: '',
+    phone: '',
   });
+
+  const dispatch = useDispatch();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveContact = () => {
+    dispatch(addContact(formData));
+    setFormData({ name: '', username: '', phone: '' });
+  };
 
   return (
     <div>
-      <h2>Додати контакт</h2>
-      <form onSubmit={formik.handleSubmit}>
-        <label htmlFor="firstName">Ім'я:</label>
+      <h2>Додавання контакту</h2>
+      <form>
+        <label>Ім'я:</label>
         <input
           type="text"
-          id="firstName"
-          name="firstName"
-          onChange={formik.handleChange}
-          value={formik.values.firstName}
+          name="name"
+          value={formData.name}
+          onChange={handleInputChange}
         />
-        {formik.touched.firstName && formik.errors.firstName && (
-          <div>{formik.errors.firstName}</div>
-        )}
-
-        <label htmlFor="lastName">Прізвище:</label>
+        <br />
+        <label>Прізвище:</label>
         <input
           type="text"
-          id="lastName"
-          name="lastName"
-          onChange={formik.handleChange}
-          value={formik.values.lastName}
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
         />
-        {formik.touched.lastName && formik.errors.lastName && (
-          <div>{formik.errors.lastName}</div>
-        )}
-
-        <label htmlFor="phone">Телефон:</label>
+        <br />
+        <label>Телефон:</label>
         <input
           type="text"
-          id="phone"
           name="phone"
-          onChange={formik.handleChange}
-          value={formik.values.phone}
+          value={formData.phone}
+          onChange={handleInputChange}
         />
-        {formik.touched.phone && formik.errors.phone && (
-          <div>{formik.errors.phone}</div>
-        )}
-
-        <button type="submit">Зберегти</button>
-        <button type="button" onClick={() => setPage('contacts')}>
-          Скасувати
+        <br />
+        <button type="button" onClick={handleSaveContact}>
+          Зберегти
         </button>
       </form>
     </div>

@@ -1,33 +1,38 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
-import Contacts from '../Contact/Contact';
+import { Provider } from 'react-redux';
+import store from '../store/store';
+import Contact from '../Contact/Contact';
 import AddContact from '../AddContact/AddContact';
 
 const App = () => {
-  const [contacts, setContacts] = useState([]);
+  const [currentPage, setCurrentPage] = useState('contacts'); // начальная страница
 
-  const addContact = (contact) => {
-    setContacts([...contacts, contact]);
-  };
-
-  const deleteContact = (index) => {
-    const updatedContacts = contacts.filter((_, i) => i !== index);
-    setContacts(updatedContacts);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   return (
-    <Router>
-      <div>
+    <Provider store={store}>
+      <Router>
         <div>
-          <Link to="/">Список контактов</Link>
-          <Link to="/newcontact">Добавить контакт</Link>
+          <div>
+            <Link to="/">Список контактов</Link>
+            <Link to="/newcontact">Добавить контакт</Link>
+          </div>
+          <Routes>
+            <Route
+              path="/"
+              element={<Contact onPageChange={handlePageChange} />}
+            />
+            <Route
+              path="/newcontact"
+              element={<AddContact />}
+            />
+          </Routes>
         </div>
-        <Routes>
-          <Route path="/" element={<Contacts contacts={contacts} deleteContact={deleteContact} />} />
-          <Route path="/newcontact" element={<AddContact addContact={addContact} />} />
-        </Routes>
-      </div>
-    </Router>
+      </Router>
+    </Provider>
   );
 };
 
